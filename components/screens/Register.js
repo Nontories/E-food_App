@@ -1,5 +1,7 @@
-import React, { useState } from "react";
+import React, { useState, useContext } from "react";
 import { Text, View, StyleSheet, Button, Image, TextInput, TouchableOpacity, Dimensions } from "react-native";
+
+import { UserContext } from '../../context/UserContext';
 
 import icon from "../../assets/E-food-icon.png"
 import locker from "../../assets/login/locker.png"
@@ -11,6 +13,7 @@ const Register = ({ navigation, route }) => {
     const [rePassword, onChangeRePassword] = useState("");
     const [phone, onChangePhone] = useState("");
     const [mail, onChangeMail] = useState("");
+    const { updateUser } = useContext(UserContext);
 
     const handleRegister = () => {
         if (!mail) {
@@ -44,7 +47,7 @@ const Register = ({ navigation, route }) => {
                         })
                             .then(response => {
                                 if (response.status === 200) {
-                                    updateUser(userData);
+                                    updateUser(response.json());
                                     navigation.navigate("Home");
                                 } else {
                                     console.log("Sign in faile " + response.status);
@@ -81,7 +84,7 @@ const Register = ({ navigation, route }) => {
                 style={styles.input}
                 onChangeText={onChangeAccount}
                 value={account}
-                placeholder="Account ID"
+                placeholder="Name"
             />
             <TextInput
                 style={styles.input}
@@ -101,14 +104,14 @@ const Register = ({ navigation, route }) => {
                 style={styles.input}
                 onChangeText={onChangePhone}
                 value={phone}
-                placeholder="phone"
+                placeholder="Phone"
                 keyboardType='numeric'
             />
             <TextInput
                 style={styles.input}
                 onChangeText={onChangeMail}
                 value={mail}
-                placeholder="mail"
+                placeholder="Mail"
             />
             <TouchableOpacity
                 style={styles.button}

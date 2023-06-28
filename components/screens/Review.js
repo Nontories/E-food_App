@@ -1,5 +1,5 @@
-import React, { useState } from "react";
-import { Text, View, StyleSheet, Image, Dimensions, ScrollView, TouchableOpacity } from "react-native";
+import React, { useState, useEffect } from "react";
+import { Text, View, StyleSheet, Image, Dimensions, FlatList, ScrollView, TouchableOpacity } from "react-native";
 import { useNavigation } from '@react-navigation/native';
 
 import BackButton from "../BackButton";
@@ -15,9 +15,23 @@ const HEIGHT = Dimensions.get("window").height
 
 const Review = ({ route }) => {
 
-
-    const restaurantID = route.params.restaurantID
+    const restaurant = route.params.restaurant
     const navigation = useNavigation();
+
+    const [data, setData] = useState(null);
+
+    useEffect(() => {
+        fetchData();
+    }, []);
+
+    const fetchData = () => {
+        fetch(`http://efood.somee.com/api/restaurant/review/${restaurant.resId}`)
+            .then(response => response.json())
+            .then(jsonData => setData(jsonData))
+            .catch(error => {
+                console.error(error);
+            });
+    };
 
     const renderStar = (rating) => {
         const stars = [];
@@ -51,40 +65,55 @@ const Review = ({ route }) => {
         );
     }
 
-    return (
-        <View>
-            <BackButton navigation={navigation} />
-            <Text style={styles.title}>Reviews</Text>
-            <Text style={styles.description}>browse any reviews for your reference</Text>
-            <Text style={styles.restaurantName}>Name Restaurant</Text>
+    const renderReviewCard = ({ item }) => {
+        return (
             <View style={styles.reviewCard}>
                 <View style={styles.cardBelong}>
-                    <Image
+                    {/* <Image
                         resizeMode="stretch"
                         style={styles.avt}
                         source={ReviewAvt}
-                    />
+                    /> */}
                     <View style={styles.belongDetail}>
                         <Text style={styles.belongName}>
-                            Your Name
+                            { item.userFullName }
                         </Text>
-                        <Text style={styles.postTime}>
+                        {/* <Text style={styles.postTime}>
                             26 minutes ago
-                        </Text>
+                        </Text> */}
                     </View>
-                    <TouchableOpacity style={styles.more}>
+                    {/* <TouchableOpacity style={styles.more}>
                         <Image
                             resizeMode="stretch"
                             style={styles.moreImg}
                             source={more}
                         />
-                    </TouchableOpacity>
+                    </TouchableOpacity> */}
                 </View>
-                {renderStar(4)}
-                {/* <View style={styles.commend}>
-
-                </View> */}
+                {renderStar( item.voting )}
+                <Text style={styles.commend}>
+                    { item.comment }
+                </Text>
             </View>
+        )
+    }
+
+    return (
+        <View>
+            <BackButton navigation={navigation} />
+            <Text style={styles.title}>Reviews</Text>
+            <Text style={styles.description}>browse any reviews for your reference</Text>
+            <Text style={styles.restaurantName}>{ restaurant.name }</Text>
+            {data ?
+                <FlatList
+                    data={data}
+                    renderItem={renderReviewCard}
+                    keyExtractor={(item) => item}
+                />
+                :
+                <Text>no Review</Text>
+            }
+
             <TabNavigate />
         </View>
     )
@@ -137,6 +166,7 @@ const styles = StyleSheet.create({
         fontWeight: 500,
         fontSize: 20,
         color: "white",
+        marginLeft: 50,
     },
     postTime: {
         fontSize: 12,
@@ -161,6 +191,10 @@ const styles = StyleSheet.create({
         width: 50,
         height: 50,
     },
+    commend: {
+        color: "white",
+        marginLeft : WIDTH * 0.1,
+    }
 });
 
 export default Review

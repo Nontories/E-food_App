@@ -1,4 +1,4 @@
-import * as React from "react";
+import React, { useState, useEffect } from "react";
 import { StyleSheet, Text, View, Image, TouchableOpacity, Dimensions } from "react-native";
 import { useNavigation } from '@react-navigation/native';
 
@@ -15,6 +15,32 @@ const HEIGHT = Dimensions.get("window").height
 const BuyPremium = () => {
 
     const navigation = useNavigation()
+
+    const [data, setData] = useState(null);
+    const [selectedButton, setSelectedButton] = useState(1);
+    const [transactionData, setTransactionData] = useState(data ? data[0] : null);
+    
+
+    const handleButtonPress = (buttonIndex, data) => {
+        setSelectedButton(buttonIndex);
+        setTransactionData(data)
+    };
+
+    useEffect(() => {
+        fetchData();
+    }, []);
+
+    const fetchData = () => {
+        fetch(`http://efood.somee.com/api/Premium/value`)
+            .then(response => response.json())
+            .then(jsonData => {
+                setTransactionData(jsonData[0])
+                setData(jsonData.slice(0, 3))
+            })
+            .catch(error => {
+                console.error(error);
+            });
+    };
 
     return (
         <View style={styles.container}>
@@ -115,7 +141,38 @@ const BuyPremium = () => {
                     Choose 1 option
                 </Text>
             </View>
-            
+            <View style={styles.chooseOption}>
+                <TouchableOpacity
+                    onPress={() => handleButtonPress(1, data[0])}
+                    style={selectedButton === 1 ? styles.selected : styles.button}
+                >
+                    <Text style={styles.buttonPeriob} >{data ? data[0].period : null}</Text>
+                    <Text style={styles.buttonText} >{data ? data[0].value : null} đ</Text>
+                </TouchableOpacity>
+
+                <TouchableOpacity
+                    onPress={() => handleButtonPress(2, data[1])}
+                    style={selectedButton === 2 ? styles.selected : styles.button}
+                >
+                    <Text style={styles.buttonPeriob} >{data ? data[1].period : null}</Text>
+                    <Text style={styles.buttonText} >{data ? data[1].value : null} đ</Text>
+                </TouchableOpacity>
+
+                <TouchableOpacity
+                    onPress={() => handleButtonPress(3, data[2])}
+                    style={selectedButton === 3 ? styles.selected : styles.button}
+                >
+                    <Text style={styles.buttonPeriob} >{data ? data[2].period : null}</Text>
+                    <Text style={styles.buttonText} >{data ? data[2].value : null} đ</Text>
+                </TouchableOpacity>
+            </View>
+            <TouchableOpacity
+                onPress={() => {
+                    navigation.navigate("Transaction", { transaction: transactionData})
+                }}
+            >
+                <Text style={styles.buyButton}>Buy Now</Text>
+            </TouchableOpacity>
         </View>
     )
 }
@@ -217,6 +274,46 @@ const styles = StyleSheet.create({
         fontSize: 25,
         fontWeight: 900,
         marginLeft: 20,
+    },
+    chooseOption: {
+        flexDirection: "row",
+        justifyContent: "space-around"
+    },
+    selected: {
+        width: WIDTH * 0.25,
+        height: HEIGHT * 0.12,
+        backgroundColor: "#E9A000",
+        borderRadius: 15,
+        marginTop: 15,
+    },
+    button: {
+        width: WIDTH * 0.25,
+        height: HEIGHT * 0.12,
+        backgroundColor: "#FFCC00",
+        borderRadius: 15,
+        marginTop: 15,
+    },
+    buttonText: {
+        textAlign: "center",
+        marginVertical: 10,
+        fontWeight: 500,
+        fontSize: 18,
+    },
+    buttonPeriob: {
+        textAlign: "center",
+        marginVertical: 10,
+        fontWeight: 700,
+        fontSize: 20,
+    }, 
+    buyButton:{
+        width: WIDTH * 0.8,
+        textAlign: "center",
+        fontSize: 35,
+        fontWeight: 700,
+        borderRadius: 15,
+        marginTop: 10,
+        marginHorizontal: WIDTH * 0.1,
+        backgroundColor: "#FFD600",
     }
 });
 

@@ -13,7 +13,10 @@ const Premium = () => {
 
     return (
         <View style={styles.container}>
-            <PremiumBack />
+            {/* <PremiumBack /> */}
+            <Text style={styles.comingSoon}>
+                Coming Soon
+            </Text>
             <TabNavigate />
         </View>
     )
@@ -23,6 +26,13 @@ const styles = StyleSheet.create({
     container: {
         width: WIDTH,
         height: HEIGHT,
+        justifyContent: "center",
+        alignItems: "center",
+    },
+    comingSoon:{
+        textAlign: "center",
+        fontSize : 35,
+        fontWeight: 700,
     }
 });
 

@@ -2,15 +2,48 @@ import React, { useState, useRef, useEffect } from "react";
 import { Text, View, StyleSheet, Button, Image, TextInput, TouchableOpacityn, Dimensions, ScrollView } from "react-native";
 
 import star from "../assets/home/Star.png"
+import sliderImage from "../assets/slider_img.png"
 
 const WIDTH = Dimensions.get("window").width
 const HEIGHT = Dimensions.get("window").height
 
-const SliderCard = (route) => {
-    const data = route.data
+const RatingData = [
+    {
+        name: "Bánh mì Thịt nướng",
+        locate: "Quận 9",
+        voteRating: 4.9,
+        price: 20000,
+        image: require("../assets/slider_img.png"),
+    },
+    {
+        name: "Bánh mì Thịt nướng",
+        locate: "Quận 9",
+        voteRating: 4.6,
+        price: 30000,
+        image: require("../assets/slider_img.png"),
+    },
+    {
+        name: "Bánh mì Thịt nướng",
+        locate: "Quận 9",
+        voteRating: 4.5,
+        price: 40000,
+        image: require("../assets/slider_img.png"),
+    },
+]
 
+const SliderCard = (route) => {
+    const [data, setData] = useState(RatingData);
     const [currentIndex, setCurrentIndex] = useState(0);
     const scrollViewRef = useRef(null);
+
+    useEffect(() => {
+        fetch("http://efood.somee.com/api/Home")
+        .then((response) => response.json())
+        .then((jsonData) => { setData(jsonData.slider) })
+        .catch((error) => {
+            console.error(error);
+        })
+    }, [])
 
     useEffect(() => {
         const interval = setInterval(() => {
@@ -51,13 +84,12 @@ const SliderCard = (route) => {
                             <View style={styles.card} key={index}>
                                 <View style={styles.detail}>
                                     <Text style={styles.name} >{item.name}</Text>
-                                    <Text style={styles.locate} >{item.locate}</Text>
                                     <View style={styles.rating}>
                                         <Image
                                             style={styles.star}
                                             source={star}
                                         />
-                                        <Text >{item.rating}</Text>
+                                        <Text >{item.voteRating}</Text>
                                     </View>
                                     <Text style={styles.price} >{item.price} VND</Text>
                                 </View>
@@ -65,7 +97,7 @@ const SliderCard = (route) => {
                                 <Image
                                     resizeMode="stretch"
                                     style={styles.image}
-                                    source={item.image}
+                                    source={sliderImage}
                                 />
                             </View>
                         )

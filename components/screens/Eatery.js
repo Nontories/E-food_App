@@ -1,5 +1,5 @@
-import React, { useState } from "react";
-import { Text, View, StyleSheet, Image, Dimensions, ScrollView, TouchableOpacity } from "react-native";
+import React, { useState, useEffect } from "react";
+import { Text, View, StyleSheet, Image, FlatList, Dimensions, ScrollView, TouchableOpacity } from "react-native";
 import { useNavigation } from '@react-navigation/native';
 
 import TabNavigate from "../TabNavigate";
@@ -15,28 +15,73 @@ const Eatery = ({ route }) => {
     const restaurant = route.params.restaurant
     const navigation = useNavigation();
 
+    const [data, setData] = useState(null);
+
+    useEffect(() => {
+        fetchData();
+    }, []);
+
+    const fetchData = () => {
+        fetch(`http://efood.somee.com/api/Restaurant/app/${restaurant.resId}`)
+            .then(response => response.json())
+            .then(jsonData => setData(jsonData))
+            .catch(error => {
+                console.error(error);
+            });
+    };
+
+    const renderDishCard = ({ item }) => {
+        return (
+            <View style={styles.dishCard}>
+                <Image
+                    style={styles.dishImage}
+                    source={cardImage}
+                />
+                <View
+                    style={styles.dishCombo}
+                >
+                    <Text
+                        style={styles.comboName}
+                    >
+                        {item.name}
+                    </Text>
+                    <View
+                        style={styles.comboDetail}
+                    >
+                        <Text>{item.description}</Text>
+                        <View style={styles.comboRating}>
+                            <Image
+                                style={styles.star}
+                                source={star}
+                            />
+                            <Text >{item.voteRating}</Text>
+                        </View>
+                    </View>
+                </View>
+            </View>
+        )
+    }
+
     return (
         <View style={styles.container}>
             <BackButton navigation={navigation} />
             <View style={styles.card}>
                 <View style={styles.detail}>
-                    <Text style={styles.name} >{restaurant.name}</Text>
+                    <Text style={styles.name} >{data ? data.resInfor.name : ""}</Text>
                     <View style={styles.rating}>
                         <Image
                             style={styles.star}
                             source={star}
                         />
-                        <Text >{restaurant.voteRating.toFixed(1)}</Text>
+                        <Text >{data ? data.resInfor.voteRating.toFixed(1) : ""}</Text>
                     </View>
-                    <Text style={styles.locate} >{restaurant.address + " " + restaurant.district}</Text>
+                    <Text style={styles.locate} >{data ? data.resInfor.address + " " + data.resInfor.district : ""}</Text>
                 </View>
 
                 <Image
                     resizeMode="stretch"
                     style={styles.image}
-                    source={{
-                        uri: restaurant && restaurant.image ? restaurant.image : cardImage
-                    }}
+                    source={{ uri: data && data.resInfor && data.resInfor.image ? data.resInfor.image : null }}
                 />
             </View>
             <Text style={styles.best}>Best seller</Text>
@@ -59,45 +104,26 @@ const Eatery = ({ route }) => {
                     </TouchableOpacity>
                 </View>
             </View>
-            {/* <View style={styles.dishCard}>
-                <Image
-                    style={styles.dishImage}
-                    source={cardImage}
-                />
-                <View
-                    style={styles.dishCombo}
-                >
-                    <Text
-                        style={styles.comboName}
-                    >
-                        Combo 2 Bánh Mì Heo Quay+ 2 Ly Coca
-                    </Text>
-                    <View
-                        style={styles.comboDetail}
-                    >
-                        <Text>2 Bánh Mì</Text>
-                        <Text>Heo Quay</Text>
-                        <Text>Rau</Text>
-                        <Text>Pate</Text>
-                        <View style={styles.comboRating}>
-                            <Image
-                                style={styles.star}
-                                source={star}
-                            />
-                            <Text >4.9</Text>
-                        </View>
-                    </View>
+            {data && data.menu[0] !== null ?
+                <View style={styles.dishList}>
+                    <FlatList
+                        data={data.menu}
+                        renderItem={renderDishCard}
+                        keyExtractor={(item) => item}
+                    />
                 </View>
-            </View> */}
-            <TabNavigate navigation={navigation} />
+                :
+                <Text style={styles.noneDish} >Không có món ăn</Text>
+            }
+            <TabNavigate />
         </View>
     )
 }
 
 const styles = StyleSheet.create({
-    container : {
+    container: {
         width: WIDTH,
-        height : HEIGHT,
+        height: HEIGHT,
         alignItems: "center",
     },
     card: {
@@ -145,7 +171,7 @@ const styles = StyleSheet.create({
         marginLeft: 5,
         backgroundColor: "white",
         fontWeight: 500,
-        transform: [{translateX: 15}]
+        transform: [{ translateX: 15 }]
     },
     image: {
         width: 140,
@@ -186,17 +212,19 @@ const styles = StyleSheet.create({
         backgroundColor: "#0C4A6E",
     },
     dishCard: {
-        width: 350,
+        width: WIDTH * 0.85,
         height: 150,
         marginTop: 20,
-        marginHorizontal: "auto",
+        marginHorizontal: WIDTH * 0.075,
         flexDirection: "row",
         alignItems: "center",
         justifyContent: "space-between",
     },
     dishImage: {
-        width: 120,
-        height: 120,
+        width: 140,
+        height: 140,
+        borderWidth: 1,
+        borderRadius: 15,
     },
     dishCombo: {
         width: 200,
@@ -224,7 +252,16 @@ const styles = StyleSheet.create({
     comboRating: {
         flexDirection: "row",
         alignItems: "center",
-        justifyContent: "right"
+        justifyContent: "flex-end"
+    },
+    dishList: {
+        width: WIDTH,
+        height: HEIGHT * 0.5,
+    },
+    noneDish: {
+        fontSize: 25,
+        fontWeight: 700,
+        marginVertical: 50,
     }
 });
 

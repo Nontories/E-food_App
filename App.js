@@ -15,6 +15,7 @@ import Premium from "./components/screens/Premium";
 import Eatery from "./components/screens/Eatery"
 import Review from "./components/screens/Review";
 import SearchResult from "./components/screens/SearchResult";
+import Transaction from './components/screens/Transaction';
 
 import { UserProvider } from "./context/UserContext"
 
@@ -137,6 +138,14 @@ export default function App() {
               component={SearchResult}
               options={{
                 title: "SearchResult",
+                headerShown: false,
+              }}
+            />
+            <Stack.Screen
+              name="Transaction"
+              component={Transaction}
+              options={{
+                title: "Transaction",
                 headerShown: false,
               }}
             />
