@@ -51,7 +51,7 @@ const Settings = () => {
                 </Text>
             </View>
             <View style={styles.container}>
-                <Text style={styles.accountName}>{user ? user.user.name : "name"}</Text>
+                <Text style={styles.accountName}>{user && user.user ? user.user.name : "name"}</Text>
                 {divide('Account Settings')}
                 <TouchableOpacity>
                     {button("Edit profile", vector)}

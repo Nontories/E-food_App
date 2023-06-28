@@ -22,7 +22,7 @@ const Transaction = ({ route }) => {
                 "Content-Type": "application/json",
             },
             body: JSON.stringify({
-                "paymentMethodId": 0,
+                "paymentMethodId": 1,
                 "accountId": user.accountId,
                 "value": transaction.value,
             })

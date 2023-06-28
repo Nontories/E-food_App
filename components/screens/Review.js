@@ -65,6 +65,14 @@ const Review = ({ route }) => {
         );
     }
 
+    const checkData = (item) => {
+        if(item && item[0]){
+            return true;
+        }else{
+            return false
+        }
+    }
+
     const renderReviewCard = ({ item }) => {
         return (
             <View style={styles.reviewCard}>
@@ -104,14 +112,14 @@ const Review = ({ route }) => {
             <Text style={styles.title}>Reviews</Text>
             <Text style={styles.description}>browse any reviews for your reference</Text>
             <Text style={styles.restaurantName}>{ restaurant.name }</Text>
-            {data ?
+            {checkData(data) ?
                 <FlatList
                     data={data}
                     renderItem={renderReviewCard}
                     keyExtractor={(item) => item}
                 />
                 :
-                <Text>no Review</Text>
+                <Text style={styles.noReview}>No Review Yet</Text>
             }
 
             <TabNavigate />
@@ -194,6 +202,14 @@ const styles = StyleSheet.create({
     commend: {
         color: "white",
         marginLeft : WIDTH * 0.1,
+    },
+    noReview: {
+        width: WIDTH * 0.9,
+        fontSize: 30,
+        fontWeight: 700,
+        marginHorizontal: WIDTH * 0.05,
+        marginVertical: HEIGHT * 0.2,
+        textAlign: 'center',
     }
 });
 

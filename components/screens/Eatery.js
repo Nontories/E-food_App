@@ -104,7 +104,7 @@ const Eatery = ({ route }) => {
                     </TouchableOpacity>
                 </View>
             </View>
-            {data && data.menu[0] !== null ?
+            {data && data.menu[0] !== undefined && data.menu[0] !== null ?
                 <View style={styles.dishList}>
                     <FlatList
                         data={data.menu}

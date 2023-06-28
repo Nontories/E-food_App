@@ -1,16 +1,16 @@
 import { StyleSheet, Text, View, Button, Image, TextInput, TouchableOpacity } from "react-native";
-import React, {useState} from "react";
+import React, { useState } from "react";
 import OTPTextInput from "react-native-otp-textinput"
 
 import locker from "../../assets/login/locker.png"
 
-const Otp = ({route, navigation}) => {
+const Otp = ({ route, navigation }) => {
 
     const mail = route.params.mail
     const [otp, onChangeOtp] = useState("");
 
-    fetchData = (mail, otp) => {
-        fetch(`http://efood.somee.com/api/Login/sendOTP?email=${mail}&otp=${otp}`, {
+    sendOtp = (mail) => {
+        fetch(`http://efood.somee.com/api/Login/sendOTP?email=${mail}`, {
             method: "POST",
             headers: {
                 "Content-Type": "application/json",
@@ -31,7 +31,7 @@ const Otp = ({route, navigation}) => {
         })
             .then(response => {
                 if (response.status === 200) {
-                    navigation.navigate("Register", {mail: mail});
+                    navigation.navigate("Register", { mail: mail });
                 } else if (response.status === 401) {
                     console.log("Invalid OTP");
                 } else {
@@ -61,9 +61,9 @@ const Otp = ({route, navigation}) => {
             <Text style={styles.number}>+ {mail}</Text>
 
 
-            <OTPTextInput 
-                inputCount= {6}
-                handleTextChange = {handleOTPChange}
+            <OTPTextInput
+                inputCount={6}
+                handleTextChange={handleOTPChange}
             ></OTPTextInput>
 
             <TouchableOpacity
@@ -90,7 +90,13 @@ const Otp = ({route, navigation}) => {
 
             <Text>
                 Do not send OTP  ?
-                <Text style={styles.resend}> Send OTP</Text>
+                <TouchableOpacity
+                    onPress={() => {
+                        fetchData(mail)
+                    }}
+                >
+                    <Text style={styles.resend}> Send OTP</Text>
+                </TouchableOpacity>
             </Text>
 
         </View>

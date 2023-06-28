@@ -12,13 +12,10 @@ const Register = ({ navigation, route }) => {
     const [password, onChangePassword] = useState("");
     const [rePassword, onChangeRePassword] = useState("");
     const [phone, onChangePhone] = useState("");
-    const [mail, onChangeMail] = useState("");
+    const [mail, onChangeMail] = useState(route.params.mail);
     const { updateUser } = useContext(UserContext);
 
     const handleRegister = () => {
-        if (!mail) {
-            onChangeMail(route.params.mail)
-        }
 
         if (password === rePassword) {
             fetch(`http://efood.somee.com/api/Login/api/register`, {
@@ -112,6 +109,7 @@ const Register = ({ navigation, route }) => {
                 onChangeText={onChangeMail}
                 value={mail}
                 placeholder="Mail"
+                editable={false}
             />
             <TouchableOpacity
                 style={styles.button}
