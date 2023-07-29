@@ -1,6 +1,7 @@
 import React, { useState, useContext } from "react";
-import { Text, View, StyleSheet, Button, Image, TextInput, TouchableOpacity, Dimensions, ToastAndroid } from "react-native";
+import { Text, View, StyleSheet, Image, TextInput, TouchableOpacity } from "react-native";
 import { UserContext } from '../../context/UserContext';
+import { useToast } from "react-native-toast-notifications";
 
 import icon from "../../assets/E-food-icon.png"
 import locker from "../../assets/login/locker.png"
@@ -9,6 +10,7 @@ const SignIn = ({ navigation }) => {
     const [account, onChangeAccount] = useState("");
     const [password, onChangePassword] = useState("");
     const { updateUser } = useContext(UserContext);
+    const toast = useToast();
 
     const handleSignIn = () => {
         fetch(`http://efood.somee.com/api/Login`, {
@@ -31,9 +33,10 @@ const SignIn = ({ navigation }) => {
             .then(data => {
                 if (data) {
                     updateUser(data);
+                    showToast("Đăng nhập thành công", "success")
                     navigation.navigate("Home");
                 } else {
-                    showToast("Sai tên đăng nhập hoặc mật khẩu")
+                    showToast("Sai tên đăng nhập hoặc mật khẩu", "warning")
                 }
             })
             .catch(error => {
@@ -42,8 +45,13 @@ const SignIn = ({ navigation }) => {
             });
     }
 
-    const showToast = (message) => {
-        ToastAndroid.show(message, ToastAndroid.LONG, ToastAndroid.TOP, 25, 10);
+    const showToast = (message, type) => {
+        toast.show(message, {
+            type: type,
+            placement: "top",
+            duration: 3000,
+            animationType: "slide-in",
+          });
     };
 
     return (

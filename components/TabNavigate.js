@@ -64,7 +64,8 @@ function TabNavigate() {
                     if(user.user ?  user.user.isPremium : false){
                         navigation.navigate("Premium")
                     }else {
-                        navigation.navigate("BuyPremium")
+                        navigation.navigate("Premium")
+                        // navigation.navigate("BuyPremium")
                     }
                 }}
             >

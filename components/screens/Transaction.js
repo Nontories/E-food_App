@@ -1,6 +1,7 @@
 import React, { useContext } from "react";
 import { Text, View, StyleSheet, Button, Image, TextInput, TouchableOpacity, Dimensions } from "react-native";
 import { LinearGradient } from 'expo-linear-gradient';
+import { useToast } from "react-native-toast-notifications";
 
 import { UserContext } from '../../context/UserContext';
 
@@ -14,9 +15,10 @@ const Transaction = ({ route }) => {
 
     const transaction = route.params.transaction
     const { user } = useContext(UserContext);
+    const toast = useToast();
 
     const handleSubmit = () => {
-        fetch(`http://efood.somee.com/api/Login/api/register`, {
+        fetch(`http://efood.somee.com/api/Transaction`, {
             method: "POST",
             headers: {
                 "Content-Type": "application/json",
@@ -28,12 +30,22 @@ const Transaction = ({ route }) => {
             })
         }).then(response => {
             console.log(response.status);
+            showToast("Xác nhận : " + response.status, "default")
         })
         .catch(error => {
-            // Handle any error that occurred during the API call
-            console.error("Error checking OTP:", error);
+            showToast("Xác nhận thất bại", "warning")
+            console.error("Error checking transaction:", error);
         });
     }
+
+    const showToast = (message, type) => {
+        toast.show(message, {
+            type: type,
+            placement: "top",
+            duration: 3000,
+            animationType: "slide-in",
+        });
+    };
 
     return (
         <View style={styles.container}>
@@ -51,7 +63,7 @@ const Transaction = ({ route }) => {
                 style={styles.transactionInfor}
             >
                 <Text style={styles.transactionText}>
-                    Thời hạn : {transaction.period}
+                    Nội dung : {user.accountId} Premium
                 </Text>
                 <Text style={styles.transactionText}>
                     Số tiền : {transaction.value} VND

@@ -1,23 +1,51 @@
 import React, { useState, useEffect } from 'react';
 import { GiftedChat } from 'react-native-gifted-chat';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { useToast } from "react-native-toast-notifications";
 
 import TabNavigate from "../TabNavigate";
-import { View, StyleSheet, Dimensions } from 'react-native';
+import { Text, View, StyleSheet, Dimensions } from 'react-native';
 
 const WIDTH = Dimensions.get("window").width;
 const HEIGHT = Dimensions.get("window").height;
 
 const Chat = () => {
   const [messages, setMessages] = useState([]);
+  const [key, setKey] = useState("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");
+  const [render, setRender] = useState(false);
+  const toast = useToast();
 
   useEffect(() => {
+    fetchData();
     loadChatLog(); // Load the chat log when the component mounts
   }, []);
 
   useEffect(() => {
     saveChatLog(); // Save the chat log whenever it changes
   }, [messages]);
+
+  const fetchData = () => {
+    fetch('http://efood.somee.com/api/Chat', {
+      method: 'GET',
+      headers: {
+        'accept': '*/*'
+      }
+    })
+      .then(response => {
+        if (!response.ok) {
+          throw new Error('Network response was not ok');
+        }
+        return response.text();
+      })
+      .then(responseText => {
+        setKey(responseText);
+        setRender(true);
+      })
+      .catch(error => {
+        console.error("log : " + error);
+      });
+  };
+
 
   const loadChatLog = async () => {
     try {
@@ -71,47 +99,70 @@ const Chat = () => {
       temperature: 0.5,
       n: 1,
     };
-  
-    const response = await fetch(
-      'https://api.openai.com/v1/engines/text-davinci-003/completions',
-      {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          Authorization: 'Bearer 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',
-        },
-        body: JSON.stringify(requestBody),
-      }
-    );
-  
-    if (!response.ok) {
-      throw new Error('Error communicating with the API');
-    }
-  
-    const responseData = await response.json();
 
-    console.log(responseData);
-  
-    if (responseData && responseData.choices && responseData.choices.length > 0) {
-      return responseData.choices[0].text.trim();
-    } else {
-      // Fallback response in case of an invalid API response
-      return 'Failed to retrieve a valid response.';
+    try {
+      const response = await fetch(
+        'https://api.openai.com/v1/engines/text-davinci-003/completions',
+        {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            Authorization: `Bearer ${key}`,
+          },
+          body: JSON.stringify(requestBody),
+        }
+      );
+
+      if (response.status === 429) {
+        console.log(response.status);
+      } else if (!response.ok) {
+        showToast("Không thể kết nối với GPT", "warning");
+        throw new Error('Error communicating with the API');
+      }
+
+      let responseData = await response.json();
+
+      if (responseData && responseData.choices && responseData.choices.length > 0) {
+        return responseData.choices[0].text.trim();
+      } else {
+        if(response.status === 429){
+          return 'Hình như... quá tải rồi.';
+        }
+        return 'Failed to retrieve a valid response.';
+      }
+    } catch (error) {
+      showToast("Lỗi GPT", "warning");
+      console.error('Unhandled Promise Rejection:', error);
+      throw error;
     }
   };
-  
+
+  const showToast = (message, type) => {
+    toast.show(message, {
+      type: type,
+      placement: "top",
+      duration: 3000,
+      animationType: "slide-in",
+    });
+  };
+
 
   return (
     <View style={styles.container}>
-      <View style={styles.chatContainer}>
-        <GiftedChat
-          messages={messages}
-          onSend={onSend}
-          user={{
-            _id: 1,
-          }}
-        />
-      </View>
+      {render ?
+        <View style={styles.chatContainer}>
+          <GiftedChat
+            messages={messages}
+            onSend={onSend}
+            user={{
+              _id: 1,
+            }}
+          />
+        </View>
+        :
+        <Text>Get key...</Text>
+      }
+
       <TabNavigate />
     </View>
   );

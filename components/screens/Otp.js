@@ -1,13 +1,16 @@
 import { StyleSheet, Text, View, Button, Image, TextInput, TouchableOpacity } from "react-native";
 import React, { useState } from "react";
 import OTPTextInput from "react-native-otp-textinput"
+import { useToast } from "react-native-toast-notifications";
 
 import locker from "../../assets/login/locker.png"
+import BackButton from "../BackButton";
 
 const Otp = ({ route, navigation }) => {
 
     const mail = route.params.mail
     const [otp, onChangeOtp] = useState("");
+    const toast = useToast();
 
     sendOtp = (mail) => {
         fetch(`http://efood.somee.com/api/Login/sendOTP?email=${mail}`, {
@@ -15,6 +18,9 @@ const Otp = ({ route, navigation }) => {
             headers: {
                 "Content-Type": "application/json",
             }
+        })
+        .then(() => {
+            showToast("Đã gửi OTP", "success")
         })
     };
 
@@ -33,7 +39,7 @@ const Otp = ({ route, navigation }) => {
                 if (response.status === 200) {
                     navigation.navigate("Register", { mail: mail });
                 } else if (response.status === 401) {
-                    console.log("Invalid OTP");
+                    showToast("OTP không đúng", "warning")
                 } else {
                     console.log("Unexpected response status:", response.status);
                 }
@@ -44,8 +50,20 @@ const Otp = ({ route, navigation }) => {
             });
     }
 
+    const showToast = (message, type) => {
+        toast.show(message, {
+            type: type,
+            placement: "top",
+            duration: 3000,
+            animationType: "slide-in",
+          });
+    };
+
     return (
         <View style={styles.container}>
+            <View style={styles.backButton}>
+                <BackButton />
+            </View>
             <Text style={styles.title}>OTP Verification</Text>
 
             <Text style={styles.text}>
@@ -54,7 +72,7 @@ const Otp = ({ route, navigation }) => {
                     style={{
                         fontWeight: 600,
                     }}
-                > Mobile Number
+                > Email Address
                 </Text>
             </Text>
 
@@ -92,7 +110,7 @@ const Otp = ({ route, navigation }) => {
                 Do not send OTP  ?
                 <TouchableOpacity
                     onPress={() => {
-                        fetchData(mail)
+                        sendOtp(mail)
                     }}
                 >
                     <Text style={styles.resend}> Send OTP</Text>
@@ -109,6 +127,10 @@ const styles = StyleSheet.create({
         backgroundColor: "#fff",
         alignItems: "center",
         justifyContent: "center",
+    },
+    backButton:{
+        position:"absolute",
+        top: 0,
     },
     title: {
         marginBottom: 15,

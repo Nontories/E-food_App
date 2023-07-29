@@ -1,4 +1,5 @@
 import { SafeAreaView } from 'react-native-safe-area-context';
+import { ToastProvider } from 'react-native-toast-notifications'
 
 import Intro from "./components/screens/Intro";
 import SignIn from "./components/screens/SignIn";
@@ -16,6 +17,7 @@ import Eatery from "./components/screens/Eatery"
 import Review from "./components/screens/Review";
 import SearchResult from "./components/screens/SearchResult";
 import Transaction from './components/screens/Transaction';
+import PremiumResult from './components/screens/premiumResult';
 
 import { UserProvider } from "./context/UserContext"
 
@@ -27,132 +29,145 @@ const Stack = createNativeStackNavigator();
 
 export default function App() {
   return (
-    <SafeAreaView style={{flex: 1}}>
-      < UserProvider >
-        <NavigationContainer>
-          <Stack.Navigator>
-            <Stack.Screen
-              name="Intro"
-              component={Intro}
-              options={{
-                title: "Intro",
-                headerShown: false,
-              }}
-            />
-            <Stack.Screen
-              name="SignIn"
-              component={SignIn}
-              options={{
-                title: "SignIn",
-                headerShown: false,
-              }}
-            />
-            <Stack.Screen
-              name="Login"
-              component={Login}
-              options={{
-                title: "Login",
-                headerShown: false,
-              }}
-            />
-            <Stack.Screen
-              name="Otp"
-              component={Otp}
-              options={{
-                title: "otp",
-                headerShown: false,
-              }}
-            />
-            <Stack.Screen
-              name="Register"
-              component={Register}
-              options={{
-                title: "Register",
-                headerShown: false,
-              }}
-            />
+    <SafeAreaView style={{ flex: 1 }}>
+      <ToastProvider
+        offset={50}
+        
+      >
+        < UserProvider >
+          <NavigationContainer>
+            <Stack.Navigator>
+              <Stack.Screen
+                name="Intro"
+                component={Intro}
+                options={{
+                  title: "Intro",
+                  headerShown: false,
+                }}
+              />
+              <Stack.Screen
+                name="SignIn"
+                component={SignIn}
+                options={{
+                  title: "SignIn",
+                  headerShown: false,
+                }}
+              />
+              <Stack.Screen
+                name="Login"
+                component={Login}
+                options={{
+                  title: "Login",
+                  headerShown: false,
+                }}
+              />
+              <Stack.Screen
+                name="Otp"
+                component={Otp}
+                options={{
+                  title: "otp",
+                  headerShown: false,
+                }}
+              />
+              <Stack.Screen
+                name="Register"
+                component={Register}
+                options={{
+                  title: "Register",
+                  headerShown: false,
+                }}
+              />
 
-            {/* 4 main page */}
+              {/* 4 main page */}
 
-            <Stack.Screen
-              name="Home"
-              component={Home}
-              options={{
-                title: "Home",
-                headerShown: false,
-              }}
-            />
-            <Stack.Screen
-              name="Settings"
-              component={Settings}
-              options={{
-                title: "Settings",
-                headerShown: false,
-              }}
-            />
-            <Stack.Screen
-              name="Chat"
-              component={Chat}
-              options={{
-                title: "Chat",
-                headerShown: false,
-              }}
-            />
-            <Stack.Screen
-              name="BuyPremium"
-              component={BuyPremium}
-              options={{
-                title: "BuyPremium",
-                headerShown: false,
-              }}
-            />
-            <Stack.Screen
-              name="Premium"
-              component={Premium}
-              options={{
-                title: "Premium",
-                headerShown: false,
-              }}
-            />
+              <Stack.Screen
+                name="Home"
+                component={Home}
+                options={{
+                  title: "Home",
+                  headerShown: false,
+                }}
+              />
+              <Stack.Screen
+                name="Settings"
+                component={Settings}
+                options={{
+                  title: "Settings",
+                  headerShown: false,
+                }}
+              />
+              <Stack.Screen
+                name="Chat"
+                component={Chat}
+                options={{
+                  title: "Chat",
+                  headerShown: false,
+                }}
+              />
+              <Stack.Screen
+                name="BuyPremium"
+                component={BuyPremium}
+                options={{
+                  title: "BuyPremium",
+                  headerShown: false,
+                }}
+              />
+              <Stack.Screen
+                name="Premium"
+                component={Premium}
+                options={{
+                  title: "Premium",
+                  headerShown: false,
+                }}
+              />
 
-            {/* home child pages */}
+              {/* home child pages */}
 
-            <Stack.Screen
-              name="Eatery"
-              component={Eatery}
-              options={{
-                title: "Eatery",
-                headerShown: false,
-              }}
-            />
-            <Stack.Screen
-              name="Review"
-              component={Review}
-              options={{
-                title: "Review",
-                headerShown: false,
-              }}
-            />
-            <Stack.Screen
-              name="SearchResult"
-              component={SearchResult}
-              options={{
-                title: "SearchResult",
-                headerShown: false,
-              }}
-            />
-            <Stack.Screen
-              name="Transaction"
-              component={Transaction}
-              options={{
-                title: "Transaction",
-                headerShown: false,
-              }}
-            />
+              <Stack.Screen
+                name="Eatery"
+                component={Eatery}
+                options={{
+                  title: "Eatery",
+                  headerShown: false,
+                }}
+              />
+              <Stack.Screen
+                name="Review"
+                component={Review}
+                options={{
+                  title: "Review",
+                  headerShown: false,
+                }}
+              />
+              <Stack.Screen
+                name="SearchResult"
+                component={SearchResult}
+                options={{
+                  title: "SearchResult",
+                  headerShown: false,
+                }}
+              />
+              <Stack.Screen
+                name="Transaction"
+                component={Transaction}
+                options={{
+                  title: "Transaction",
+                  headerShown: false,
+                }}
+              />
+              <Stack.Screen
+                name="PremiumResult"
+                component={PremiumResult}
+                options={{
+                  title: "PremiumResult",
+                  headerShown: false,
+                }}
+              />
+            </Stack.Navigator>
+          </NavigationContainer>
+        </UserProvider >
+      </ToastProvider>
 
-          </Stack.Navigator>
-        </NavigationContainer>
-      </UserProvider >
     </SafeAreaView>
 
   );

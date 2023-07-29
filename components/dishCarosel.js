@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { Text, View, StyleSheet, Image, Dimensions, ScrollView, TouchableOpacity } from "react-native";
+import { Text, View, StyleSheet, Image, FlatList, Dimensions, ScrollView, TouchableOpacity } from "react-native";
 import { useNavigation } from '@react-navigation/native';
 import star from "../assets/home/Star.png"
 
@@ -85,8 +85,10 @@ const dishData = [
 const DishCarosel = (route) => {
     const [restaurantData, setRestaurantData] = useState(dishData)
     const [activeButton, setActiveButton] = useState(restaurantData[0] ? restaurantData[0].name : "");
+    const [load, setLoad] = useState(false)
     const navigation = useNavigation();
-    
+    const defaultImage = "https://www.bookmychefs.com/food/chef_details/NTA2"
+
     useEffect(() => {
         let data = [];
         fetch("http://efood.somee.com/api/Home")
@@ -107,6 +109,7 @@ const DishCarosel = (route) => {
                 Promise.all(fetchPromises)
                     .then(() => {
                         setRestaurantData(data);
+                        setLoad(true)
                     });
             });
     }, []);
@@ -131,9 +134,9 @@ const DishCarosel = (route) => {
     };
 
     const validArray = (array) => {
-        if(array){
-            if(array.res){
-                if(array.res[0] !== null){
+        if (array) {
+            if (array.res) {
+                if (array.res[0] !== null) {
                     return true
                 }
             }
@@ -151,81 +154,99 @@ const DishCarosel = (route) => {
 
     }
 
-    return (
-        <View style={styles.wrap}>
-            <ScrollView
-                onScroll={({ nativeEvent }) => onchange(nativeEvent)}
-                showsHorizontalScrollIndicator={false}
-                horizontal
-                style={styles.wrap}
+    renderDish = (element) => {
+        return (
+            <TouchableOpacity
+                style={styles.dishNav}
+                key={key}
+                onPress={() => {
+                    navigation.navigate("Eatery", { restaurant: element.item })
+                }}
             >
-                {
-                    typeof restaurantData !== 'undefined' ? restaurantData.map((item, index) => {
-                        return (
-                            <TouchableOpacity
-                                style={[
-                                    styles.typeFood,
-                                    activeButton === item.name && styles.activeButton,
-                                    key={index},
-                                ]}
-                                key={index}
-                                onPress={() => handleButtonPress(item.name)}
-                            >
-                                <Image
-                                    resizeMode="stretch"
-                                    style={styles.typeImage}
-                                    source={icon}
-                                />
-                                <Text style={[
-                                    styles.typeName,
-                                    activeButton === item.name && styles.activeButton
-                                ]}>
-                                    {item.name}
-                                </Text>
-                            </TouchableOpacity>
-                        )
-                    }) : ""
-                }
-            </ScrollView>
+                <Image
+                    resizeMode="stretch"
+                    style={styles.dishImage}
+                    source={{
+                        uri: typeof element.item.image === "string" && element.item.image !== null ? element.item.image : defaultImage
+                    }}
+                />
+                {/* {console.log()} */}
+                <Text style={styles.dishName}>
+                    {element.item ? element.item.name : ""}
+                </Text>
+                <View
+                    style={styles.rating}
+                >
+                    <Image
+                        resizeMode="stretch"
+                        style={styles.star}
+                        source={star}
+                    />
+                    <Text>
+                        {element.item ? element.item.voteRating.toFixed(1) : ""}
+                    </Text>
+                </View>
+            </TouchableOpacity>
+        )
+    }
 
-            <View style={styles.dish}>
-                {validArray(activeContent) ? cutArray(activeContent.res).map((element, key) => {
-                    return (
-                        <TouchableOpacity
-                            style={styles.dishNav}
-                            key={key}
-                            onPress={() => {
-                                navigation.navigate("Eatery", { restaurant: element})
-                            }}
-                        >
-                            <Image
-                                resizeMode="stretch"
-                                style={styles.dishImage}
-                                source={{
-                                    uri: element && element.image ? element.image : icon
-                                }}
-                            />
-                            <Text style={styles.dishName}>
-                                {element ? element.name : ""}
-                            </Text>
-                            <View
-                                style={styles.rating}
-                            >
-                                <Image
-                                    resizeMode="stretch"
-                                    style={styles.star}
-                                    source={star}
-                                />
-                                <Text>
-                                    {element ?  element.voteRating.toFixed(1) : ""}
-                                </Text>
-                            </View>
-                        </TouchableOpacity>
-                    )
-                }) : console.log("not things")
+    return (
 
-                }
-            </View>
+        <View style={styles.wrap}>
+
+            {
+                load ?
+                    <ScrollView
+                        onScroll={({ nativeEvent }) => onchange(nativeEvent)}
+                        showsHorizontalScrollIndicator={false}
+                        horizontal
+                        style={styles.type}
+                    >
+                        {
+                            typeof restaurantData !== 'undefined' ? restaurantData.map((item, index) => {
+                                return (
+                                    <TouchableOpacity
+                                        style={[
+                                            styles.typeFood,
+                                            activeButton === item.name && styles.activeButton,
+                                            key = { index },
+                                        ]}
+                                        key={index}
+                                        onPress={() => handleButtonPress(item.name)}
+                                    >
+                                        <Image
+                                            resizeMode="stretch"
+                                            style={styles.typeImage}
+                                            source={icon}
+                                        />
+                                        <Text style={[
+                                            styles.typeName,
+                                            activeButton === item.name && styles.activeButton
+                                        ]}>
+                                            {item.name}
+                                        </Text>
+                                    </TouchableOpacity>
+                                )
+                            }) : ""
+                        }
+                    </ScrollView>
+                    :
+                    <Text>Loading data...</Text>
+            }
+            {load ?
+
+                <FlatList
+                    columnWrapperStyle={{ justifyContent: "space-between" }}
+                    showsVerticalScrollIndicator={false}
+                    style={styles.dish}
+                    numColumns={2}
+                    data={validArray(activeContent) ? activeContent.res : []}
+                    renderItem={renderDish}
+                    keyExtractor={(item, index) => index.toString()}
+                />
+                : ""
+            }
+
         </View>
     )
 }
@@ -233,7 +254,11 @@ const DishCarosel = (route) => {
 const styles = StyleSheet.create({
     wrap: {
         width: WIDTH,
-        height: HEIGHT * 0.205,
+        height: 500,
+    },
+    type: {
+        width: WIDTH,
+        height: 50,
     },
     typeFood: {
         height: 40,
@@ -258,18 +283,13 @@ const styles = StyleSheet.create({
         borderWidth: 0,
     },
     dish: {
-        position: "absolute",
-        width: 370,
-        height: 380,
-        bottom: -260,
         marginHorizontal: 20,
         flexDirection: "row",
         flexWrap: 'wrap',
-        alignItems: "center",
     },
     dishNav: {
-        height: 120,
-        width: 120,
+        height: 250,
+        width: 150,
         marginHorizontal: 20,
         alignItems: "center",
     },
@@ -280,7 +300,7 @@ const styles = StyleSheet.create({
         borderRadius: 15,
     },
     dishName: {
-        width: 130,
+        width: 150,
         textAlign: "center",
         fontSize: 18,
         fontWeight: 500,

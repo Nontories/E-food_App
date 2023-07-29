@@ -1,11 +1,14 @@
 import { StyleSheet, Text, View, Image, TextInput, TouchableOpacity, ToastAndroid } from "react-native";
-import React, {useState} from "react";
+import React, { useState } from "react";
+import { useToast } from "react-native-toast-notifications";
 
 import icon from "../../assets/E-food-icon.png"
 import locker from "../../assets/login/locker.png"
+import BackButton from "../BackButton";
 
 const Login = ({ navigation }) => {
     const [mail, onChangeMail] = useState("");
+    const toast = useToast();
 
     const fetchData = (mail) => {
         fetch(`http://efood.somee.com/api/Login/sendOTP?email=${mail}`, {
@@ -14,13 +17,18 @@ const Login = ({ navigation }) => {
                 "Content-Type": "application/json",
             }
         })
+        .then(() => {
+            showToast("Đã gửi OTP", "success")
+        })
     };
 
+    function validateEmail(email) {
+        const pattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        return pattern.test(email);
+    }
 
     const handleSignIn = async () => {
-        // const isValidEmail = await checkValidEmail(number);
-        const isValidEmail = true
-        if (isValidEmail) {
+        if (validateEmail(mail)) {
             fetchData(mail)
             navigation.navigate("Otp", { mail: mail });
         } else {
@@ -28,8 +36,18 @@ const Login = ({ navigation }) => {
         }
     };
 
+    const showToast = (message, type) => {
+        toast.show(message, {
+            type: type,
+            placement: "top",
+            duration: 3000,
+            animationType: "slide-in",
+          });
+    };
+
     return (
         <View style={styles.login}>
+            {/* <BackButton /> */}
             <Image
                 style={styles.tinyLogo}
                 source={icon}

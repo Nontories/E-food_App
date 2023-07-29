@@ -1,6 +1,7 @@
 import React, { useState, useContext } from "react";
 import { Text, View, StyleSheet, Image, Dimensions, ScrollView, TouchableOpacity } from "react-native";
 import { useNavigation } from '@react-navigation/native';
+import { useToast } from "react-native-toast-notifications";
 
 import { UserContext } from '../../context/UserContext';
 import TabNavigate from "../TabNavigate";
@@ -17,6 +18,7 @@ const Settings = () => {
 
     const navigation = useNavigation()
     const { user, updateUser } = useContext(UserContext);
+    const toast = useToast();
 
     const button = (name, image) => {
         return (
@@ -39,9 +41,23 @@ const Settings = () => {
 
     const handleLogout = () => {
         updateUser("");
+        showToast("Đăng xuất thành công", "success")
         navigation.navigate("Intro")
     }
-    
+
+    const handleComingSoon = () => {
+        showToast("Comming soon", "warning")
+    }
+
+    const showToast = (message, type) => {
+        toast.show(message, {
+            type: type,
+            placement: "top",
+            duration: 3000,
+            animationType: "slide-in",
+        });
+    };
+
     return (
         <View>
             <BackButton />
@@ -53,26 +69,54 @@ const Settings = () => {
             <View style={styles.container}>
                 <Text style={styles.accountName}>{user && user.user ? user.user.name : "name"}</Text>
                 {divide('Account Settings')}
-                <TouchableOpacity>
+                <TouchableOpacity
+                    onPress={() => {
+                        handleComingSoon()
+                    }}
+                >
                     {button("Edit profile", vector)}
                 </TouchableOpacity>
-                <TouchableOpacity>
+                <TouchableOpacity
+                    onPress={() => {
+                        handleComingSoon()
+                    }}
+                >
                     {button("Change password", vector)}
                 </TouchableOpacity>
-                <TouchableOpacity>
+                <TouchableOpacity
+                    onPress={() => {
+                        handleComingSoon()
+                    }}
+                >
                     {button("Add a payment method", plus)}
                 </TouchableOpacity>
-                <TouchableOpacity>
+                <TouchableOpacity
+                    onPress={() => {
+                        handleComingSoon()
+                    }}
+                >
                     {button("Push notifications", vector)}
                 </TouchableOpacity>
                 {divide('More')}
-                <TouchableOpacity>
+                <TouchableOpacity
+                    onPress={() => {
+                        handleComingSoon()
+                    }}
+                >
                     {button("About us", vector)}
                 </TouchableOpacity>
-                <TouchableOpacity>
+                <TouchableOpacity
+                    onPress={() => {
+                        handleComingSoon()
+                    }}
+                >
                     {button("Privacy policy", vector)}
                 </TouchableOpacity>
-                <TouchableOpacity>
+                <TouchableOpacity
+                    onPress={() => {
+                        handleComingSoon()
+                    }}
+                >
                     {button("Terms and conditions", vector)}
                 </TouchableOpacity>
                 <TouchableOpacity
@@ -112,17 +156,17 @@ const styles = StyleSheet.create({
         bottom: 330,
         backgroundColor: "white",
     },
-    accountName : {
+    accountName: {
         width: WIDTH * 0.8,
         marginHorizontal: WIDTH * 0.05,
         marginVertical: 15,
-        fontSize : 30,
+        fontSize: 30,
     },
     button: {
         width: WIDTH * 0.8,
         height: HEIGHT * 0.05,
         marginHorizontal: WIDTH * 0.05,
-        marginVertical : 7,
+        marginVertical: 7,
         flexDirection: "row",
         alignItems: "center",
         justifyContent: "space-between",
@@ -138,7 +182,7 @@ const styles = StyleSheet.create({
         borderBottomWidth: 2,
         padding: 15,
     },
-    divideText : {
+    divideText: {
         fontSize: 18,
     }
 });

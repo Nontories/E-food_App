@@ -35,6 +35,7 @@ const SliderCard = (route) => {
     const [data, setData] = useState(RatingData);
     const [currentIndex, setCurrentIndex] = useState(0);
     const scrollViewRef = useRef(null);
+    const defaultImage= "https://www.bookmychefs.com/food/chef_details/NTA2"
 
     useEffect(() => {
         fetch("http://efood.somee.com/api/Home")
@@ -89,15 +90,16 @@ const SliderCard = (route) => {
                                             style={styles.star}
                                             source={star}
                                         />
-                                        <Text >{item.voteRating}</Text>
+                                        <Text >{item.voteRating.toFixed(1)}</Text>
                                     </View>
                                     <Text style={styles.price} >{item.price} VND</Text>
                                 </View>
-
                                 <Image
                                     resizeMode="stretch"
                                     style={styles.image}
-                                    source={sliderImage}
+                                    source={{
+                                        uri: typeof item.image === "string" && item.image !== null ? item.image : defaultImage
+                                    }}
                                 />
                             </View>
                         )
@@ -132,12 +134,12 @@ const styles = StyleSheet.create({
     image: {
         width: 100,
         height: 150,
+        borderRadius: 15,
         transform: [{ translateX: -5 }],
     },
     name: {
         width: 160,
         fontSize: 20,
-        transform: [{ translateX: 20 }],
         fontWeight: 700,
         color: "white"
     },
@@ -151,7 +153,7 @@ const styles = StyleSheet.create({
         flexDirection: "row",
         alignItems: "center",
         paddingHorizontal: 13,
-        marginTop: 12,
+        marginVertical: 8,
         backgroundColor: "white",
         borderRadius: 5,
     },

@@ -35,7 +35,9 @@ const Eatery = ({ route }) => {
             <View style={styles.dishCard}>
                 <Image
                     style={styles.dishImage}
-                    source={cardImage}
+                    source={{
+                        uri: typeof item.image === "string" && item.image !== null ? item.image : cardImage
+                    }}
                 />
                 <View
                     style={styles.dishCombo}
@@ -48,7 +50,8 @@ const Eatery = ({ route }) => {
                     <View
                         style={styles.comboDetail}
                     >
-                        <Text>{item.description}</Text>
+                        <Text>{item.description ? item.description : "Không có thông tin"}</Text>
+                        <Text> price : {item.price}</Text>
                         <View style={styles.comboRating}>
                             <Image
                                 style={styles.star}
@@ -109,7 +112,7 @@ const Eatery = ({ route }) => {
                     <FlatList
                         data={data.menu}
                         renderItem={renderDishCard}
-                        keyExtractor={(item) => item}
+                        keyExtractor={(item) => item.dishId}
                     />
                 </View>
                 :
