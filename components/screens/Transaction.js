@@ -14,8 +14,10 @@ const HEIGHT = Dimensions.get("window").height
 const Transaction = ({ route }) => {
 
     const transaction = route.params.transaction
-    const { user } = useContext(UserContext);
+    const user = route.params.user
     const toast = useToast();
+
+    console.log(user);
 
     const handleSubmit = () => {
         fetch(`http://efood.somee.com/api/Transaction`, {
@@ -25,8 +27,8 @@ const Transaction = ({ route }) => {
             },
             body: JSON.stringify({
                 "paymentMethodId": 1,
-                "accountId": user.accountId,
-                "value": transaction.value,
+                "accountId": user?.accountId,
+                "value": transaction?.value,
             })
         }).then(response => {
             console.log(response.status);
@@ -63,10 +65,10 @@ const Transaction = ({ route }) => {
                 style={styles.transactionInfor}
             >
                 <Text style={styles.transactionText}>
-                    Nội dung : {user.accountId} Premium
+                    Nội dung : {user?.userId}
                 </Text>
                 <Text style={styles.transactionText}>
-                    Số tiền : {transaction.value} VND
+                    Số tiền : {transaction?.value} VND
                 </Text>
             </LinearGradient>
             <View style={styles.transactionView}>

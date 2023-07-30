@@ -1,6 +1,8 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useContext } from "react";
 import { StyleSheet, Text, View, Image, TouchableOpacity, Dimensions } from "react-native";
 import { useNavigation } from '@react-navigation/native';
+import { UserContext } from '../../context/UserContext';
+import { useToast } from "react-native-toast-notifications";
 
 import PremiumIcon from "../../assets/premium/premium.png";
 import EfoodIconIcon from "../../assets/PremiumIcon.png";
@@ -8,6 +10,7 @@ import BackIcon from "../../assets/premium/x.png";
 import frame from "../../assets/premium/frame.png";
 import check from "../../assets/premium/checkIcon.png";
 import option from "../../assets/premium/option.png";
+import SpinnerLoading from "../SpinnerLoading"
 
 const WIDTH = Dimensions.get("window").width
 const HEIGHT = Dimensions.get("window").height
@@ -19,11 +22,31 @@ const BuyPremium = () => {
     const [data, setData] = useState(null);
     const [selectedButton, setSelectedButton] = useState(1);
     const [transactionData, setTransactionData] = useState(data ? data[0] : null);
-    
+    const [loading, setLoading] = useState(true);
+    const { user } = useContext(UserContext);
+    const toast = useToast();
 
     const handleButtonPress = (buttonIndex, data) => {
         setSelectedButton(buttonIndex);
         setTransactionData(data)
+    };
+
+    const handleSubmit = () => {
+        console.log(user);
+        if (user ? user.userId : false) {
+            navigation.navigate("Transaction", { transaction: transactionData, user: user })
+        } else {
+            showToast("Đang lấy dữ liệu user, hãy thử lại sau", "warning");
+        }
+    }
+
+    const showToast = (message, type) => {
+        toast.show(message, {
+            type: type,
+            placement: "top",
+            duration: 3000,
+            animationType: "slide-in",
+        });
     };
 
     useEffect(() => {
@@ -146,33 +169,35 @@ const BuyPremium = () => {
                     onPress={() => handleButtonPress(1, data[0])}
                     style={selectedButton === 1 ? styles.selected : styles.button}
                 >
-                    <Text style={styles.buttonPeriob} >{data ? data[0].period : null}</Text>
-                    <Text style={styles.buttonText} >{data ? data[0].value : null} đ</Text>
+                    <Text style={styles.buttonPeriob} >Loại {data ? data[0].period : null}</Text>
+                    <Text style={styles.buttonText} >{data ? data[0].value.toLocaleString('en') : null} đ</Text>
                 </TouchableOpacity>
 
                 <TouchableOpacity
                     onPress={() => handleButtonPress(2, data[1])}
                     style={selectedButton === 2 ? styles.selected : styles.button}
                 >
-                    <Text style={styles.buttonPeriob} >{data ? data[1].period : null}</Text>
-                    <Text style={styles.buttonText} >{data ? data[1].value : null} đ</Text>
+                    <Text style={styles.buttonPeriob} >Loại {data ? data[1].period : null}</Text>
+                    <Text style={styles.buttonText} >{data ? data[1].value.toLocaleString('en') : null} đ</Text>
                 </TouchableOpacity>
 
                 <TouchableOpacity
                     onPress={() => handleButtonPress(3, data[2])}
                     style={selectedButton === 3 ? styles.selected : styles.button}
                 >
-                    <Text style={styles.buttonPeriob} >{data ? data[2].period : null}</Text>
-                    <Text style={styles.buttonText} >{data ? data[2].value : null} đ</Text>
+                    <Text style={styles.buttonPeriob} >Loại {data ? data[2].period : null}</Text>
+                    <Text style={styles.buttonText} >{data ? data[2].value.toLocaleString('en') : null} đ</Text>
                 </TouchableOpacity>
             </View>
-            <TouchableOpacity
-                onPress={() => {
-                    navigation.navigate("Transaction", { transaction: transactionData})
-                }}
-            >
-                <Text style={styles.buyButton}>Buy Now</Text>
-            </TouchableOpacity>
+            {!data ?
+                <SpinnerLoading />
+                :
+                <TouchableOpacity
+                    onPress={() => { handleSubmit() }}
+                >
+                    <Text style={styles.buyButton}>Buy Now</Text>
+                </TouchableOpacity>
+            }
         </View>
     )
 }
@@ -304,8 +329,8 @@ const styles = StyleSheet.create({
         marginVertical: 10,
         fontWeight: 700,
         fontSize: 20,
-    }, 
-    buyButton:{
+    },
+    buyButton: {
         width: WIDTH * 0.8,
         textAlign: "center",
         fontSize: 35,

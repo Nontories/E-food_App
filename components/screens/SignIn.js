@@ -12,37 +12,35 @@ const SignIn = ({ navigation }) => {
     const { updateUser } = useContext(UserContext);
     const toast = useToast();
 
-    const handleSignIn = () => {
-        fetch(`http://efood.somee.com/api/Login`, {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/json",
-            },
-            body: JSON.stringify({
-                "email": account,
-                "password": password,
-            })
-        })
-            .then(response => {
-                if (response.status === 200) {
-                    return (response.json())
-                } else {
-                    return null
-                }
-            })
-            .then(data => {
+    const handleSignIn = async () => {
+        try {
+            const response = await fetch(`http://efood.somee.com/api/Login`, {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify({
+                    "email": account,
+                    "password": password,
+                }),
+            });
+    
+            if (response.status === 200) {
+                const data = await response.json();
                 if (data) {
                     updateUser(data);
-                    showToast("Đăng nhập thành công", "success")
+                    showToast("Đăng nhập thành công", "success");
                     navigation.navigate("Home");
                 } else {
-                    showToast("Sai tên đăng nhập hoặc mật khẩu", "warning")
+                    showToast("Sai tên đăng nhập hoặc mật khẩu", "warning");
                 }
-            })
-            .catch(error => {
-                // Handle any error that occurred during the API call
-                console.error("Error checking OTP:", error);
-            });
+            } else {
+                showToast("Sai tên đăng nhập hoặc mật khẩu", "warning");
+            }
+        } catch (error) {
+            // Handle any error that occurred during the API call
+            console.error("Error checking OTP:", error);
+        }
     }
 
     const showToast = (message, type) => {

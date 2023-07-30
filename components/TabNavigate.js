@@ -2,6 +2,7 @@ import React, { useContext } from "react";
 import { StyleSheet, Text, View, Image, TouchableOpacity, Dimensions } from "react-native";
 import { useNavigation } from '@react-navigation/native';
 import { UserContext } from '../context/UserContext';
+import { useToast } from "react-native-toast-notifications";
 
 import HomeIcon from "../assets/HomeIcon.png"
 import PersonalIcon from "../assets/PersonalIcon.png"
@@ -15,67 +16,78 @@ function TabNavigate() {
 
     const navigation = useNavigation()
     const { user } = useContext(UserContext);
-    
+    const toast = useToast();
+
+    const showToast = (message, type) => {
+        toast.show(message, {
+            type: type,
+            placement: "top",
+            duration: 3000,
+            animationType: "slide-in",
+        });
+    };
+
+    const handleNavigate = () => {
+        if (user?.user.isPremium) {
+            navigation.navigate("Premium")
+        } else {
+            navigation.navigate("BuyPremium")
+        }
+    }
+
     return (
         <View style={styles.container}>
+            <View style={styles.content}>
+                <TouchableOpacity
+                    style={styles.tabNav}
+                    onPress={() => {
+                        navigation.navigate("Home")
+                    }}
+                >
+                    <Image
+                        resizeMode="stretch"
+                        style={styles.tabImage}
+                        source={HomeIcon}
+                    />
+                </TouchableOpacity>
 
-            <TouchableOpacity
-                style={styles.tabNav}
-                onPress={() => {
-                    navigation.navigate("Home")
-                }}
-            >
-                <Image
-                    resizeMode="stretch"
-                    style={styles.tabImage}
-                    source={HomeIcon}
-                />
-            </TouchableOpacity>
+                <TouchableOpacity
+                    style={styles.tabNav}
+                    onPress={() => {
+                        navigation.navigate("Settings")
+                    }}
+                >
+                    <Image
+                        resizeMode="stretch"
+                        style={styles.tabImage}
+                        source={PersonalIcon}
+                    />
+                </TouchableOpacity>
 
-            <TouchableOpacity
-                style={styles.tabNav}
-                onPress={() => {
-                    navigation.navigate("Settings")
-                }}
-            >
-                <Image
-                    resizeMode="stretch"
-                    style={styles.tabImage}
-                    source={PersonalIcon}
-                />
-            </TouchableOpacity>
+                <TouchableOpacity
+                    style={styles.tabNav}
+                    onPress={() => {
+                        navigation.navigate("Chat")
+                    }}
+                >
+                    <Image
+                        resizeMode="stretch"
+                        style={styles.tabImage}
+                        source={EfoodIcon}
+                    />
+                </TouchableOpacity>
 
-            <TouchableOpacity
-                style={styles.tabNav}
-                onPress={() => {
-                    navigation.navigate("Chat")
-                }}
-            >
-                <Image
-                    resizeMode="stretch"
-                    style={styles.tabImage}
-                    source={EfoodIcon}
-                />
-            </TouchableOpacity>
-
-            <TouchableOpacity
-                style={styles.tabNav}
-                onPress={() => {
-                    if(user.user ?  user.user.isPremium : false){
-                        navigation.navigate("Premium")
-                    }else {
-                        navigation.navigate("Premium")
-                        // navigation.navigate("BuyPremium")
-                    }
-                }}
-            >
-                <Image
-                    resizeMode="stretch"
-                    style={[styles.tabImage, styles.premiun]}
-                    source={PremiumIcon}
-                />
-            </TouchableOpacity>
-
+                <TouchableOpacity
+                    style={styles.tabNav}
+                    onPress={() => { handleNavigate() }}
+                >
+                    <Image
+                        resizeMode="stretch"
+                        style={[styles.tabImage, styles.premiun]}
+                        source={PremiumIcon}
+                    />
+                </TouchableOpacity>
+            </View>
         </View>
     );
 }
@@ -83,10 +95,16 @@ function TabNavigate() {
 const styles = StyleSheet.create({
     container: {
         position: "absolute",
+        right: 0,
+        left: 0,
+        top: HEIGHT * 0.91,
+        backgroundColor: "white",
+        justifyContent: "center",
+        alignItems: "center",
+    },
+    content: {
         height: 55,
-        right :0,
-        left : 0,
-        top: HEIGHT * 0.9,
+        width: WIDTH * 0.95,
         borderWidth: 1,
         borderRadius: 25,
         backgroundColor: "white",
@@ -98,10 +116,10 @@ const styles = StyleSheet.create({
     tabNav: {
         width: 40,
         height: 40,
-        textAlign: "center"
+        textAlign: "center",
     },
     tabImage: {
-        width: 40 ,
+        width: 40,
         height: 40,
     },
     premiun: {
